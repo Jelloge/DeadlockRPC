@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-"""
-Deadlock Discord Rich Presence — System Tray Application
-
-Download, run, and forget. Shows your live Deadlock match info on Discord.
-Sits quietly in the system tray and does everything automatically.
-"""
-
 import ctypes
 import json
 import logging
@@ -33,30 +25,13 @@ except ImportError:
 from heroes import lookup_hero, get_game_mode_display
 from gsi_server import GSIServer
 
-# ═══════════════════════════════════════════════════════════════════════════════
-#  CONFIGURATION — The only thing YOU (the developer) need to set up once.
-#
-#  1. Go to https://discord.com/developers/applications
-#  2. Create a new application named "Deadlock"
-#  3. Paste the Application ID below
-#  4. Go to Rich Presence > Art Assets and upload:
-#       - "deadlock_icon"    → Deadlock game icon (fallback when no hero selected)
-#       - "hero_abrams"      → Abrams portrait
-#       - "hero_haze"        → Haze portrait
-#       - ... (see heroes.py for the full asset key list)
-#  5. Build the exe with: pyinstaller deadlock_rpc.spec
-#  6. Distribute the exe. Users just run it — zero setup.
-# ═══════════════════════════════════════════════════════════════════════════════
+DISCORD_APP_ID = "1474302474474094634"
 
-DISCORD_APP_ID = "YOUR_DISCORD_APP_ID_HERE"  # ← REPLACE THIS BEFORE BUILDING
-
-# ─── Constants ─────────────────────────────────────────────────────────────────
-
-APP_NAME = "Deadlock Rich Presence"
+APP_NAME = "Deadlock"
 VERSION = "1.0.0"
 DEADLOCK_STEAM_ID = 1422450
 GSI_PORT = 3000
-UPDATE_INTERVAL = 15  # seconds
+UPDATE_INTERVAL = 30  # seconds
 
 DEADLOCK_PROCESS_NAMES = {
     "project8.exe", "deadlock.exe", "citadel.exe",
@@ -87,8 +62,6 @@ GSI_CFG_CONTENT = '''"Deadlock Discord RPC"
 }
 '''
 
-# ─── Logging ───────────────────────────────────────────────────────────────────
-
 LOG_DIR = Path.home() / ".deadlock-rpc"
 LOG_DIR.mkdir(exist_ok=True)
 
@@ -103,11 +76,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger("deadlock-rpc")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  AUTO-SETUP: Find Deadlock & install GSI config
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def find_steam_path() -> Path | None:
     """Locate the Steam installation directory."""
     system = platform.system()
@@ -121,7 +89,6 @@ def find_steam_path() -> Path | None:
             return Path(steam_path)
         except Exception:
             pass
-        # Fallback paths
         for p in [
             Path(r"C:\Program Files (x86)\Steam"),
             Path(r"C:\Program Files\Steam"),
@@ -152,13 +119,11 @@ def find_steam_library_folders(steam_path: Path) -> list[Path]:
     folders = [steam_path]
     vdf_path = steam_path / "steamapps" / "libraryfolders.vdf"
     if not vdf_path.exists():
-        # Try alternate location
         vdf_path = steam_path / "config" / "libraryfolders.vdf"
 
     if vdf_path.exists():
         try:
             text = vdf_path.read_text(encoding="utf-8", errors="ignore")
-            # Simple VDF parser — look for "path" entries
             import re
             for match in re.finditer(r'"path"\s+"([^"]+)"', text):
                 p = Path(match.group(1))
@@ -179,7 +144,6 @@ def find_deadlock_install() -> Path | None:
     libraries = find_steam_library_folders(steam_path)
 
     for lib in libraries:
-        # Deadlock's internal name is "Deadlock" but folder could vary
         for name in ["Deadlock", "deadlock"]:
             game_dir = lib / "steamapps" / "common" / name
             if game_dir.exists():
@@ -196,14 +160,12 @@ def install_gsi_config() -> bool:
         logger.info("You can manually place the GSI config. See README for details.")
         return False
 
-    # Deadlock uses Source 2 — cfg path is game/citadel/cfg/gamestate_integration/
     gsi_dir = game_dir / "game" / "citadel" / "cfg" / "gamestate_integration"
 
     try:
         gsi_dir.mkdir(parents=True, exist_ok=True)
         cfg_path = gsi_dir / "gamestate_integration_discord_rpc.cfg"
 
-        # Only write if it doesn't exist or content differs
         if cfg_path.exists():
             existing = cfg_path.read_text(encoding="utf-8", errors="ignore")
             if existing.strip() == GSI_CFG_CONTENT.strip():
@@ -221,11 +183,6 @@ def install_gsi_config() -> bool:
         logger.error("Failed to install GSI config: %s", e)
         return False
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  PROCESS DETECTION
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def is_deadlock_running() -> bool:
     for proc in psutil.process_iter(["name"]):
         try:
@@ -236,22 +193,11 @@ def is_deadlock_running() -> bool:
             pass
     return False
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  TRAY ICON
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def create_tray_icon_image() -> Image.Image:
-    """
-    Generate a simple Deadlock-themed tray icon.
-    If you have a proper .ico, place it at assets/icon.ico or assets/icon.png
-    and this will load it instead.
-    """
-    # Try to load a custom icon from bundled assets
     for icon_name in ["icon.ico", "icon.png"]:
         for search_dir in [
             Path(__file__).parent / "assets",
-            Path(getattr(sys, "_MEIPASS", "")) / "assets",  # PyInstaller bundle
+            Path(getattr(sys, "_MEIPASS", "")) / "assets", 
             LOG_DIR / "assets",
         ]:
             icon_path = search_dir / icon_name
@@ -260,9 +206,6 @@ def create_tray_icon_image() -> Image.Image:
                     return Image.open(icon_path).resize((64, 64))
                 except Exception:
                     pass
-
-    # Fallback: generate a simple icon programmatically
-    # Dark circle with "DL" text — recognisable in the tray
     size = 64
     img = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -270,10 +213,9 @@ def create_tray_icon_image() -> Image.Image:
     # Dark background circle
     draw.ellipse([2, 2, size - 2, size - 2], fill=(30, 30, 35, 255))
 
-    # Amber/gold ring (Deadlock's colour palette)
+    # Deadlock's colour palette
     draw.ellipse([2, 2, size - 2, size - 2], outline=(218, 165, 32, 255), width=3)
 
-    # "DL" text in the centre
     try:
         font = ImageFont.truetype("arial.ttf", 22)
     except OSError:
@@ -291,14 +233,7 @@ def create_tray_icon_image() -> Image.Image:
 
     return img
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  DISCORD RPC ENGINE
-# ═══════════════════════════════════════════════════════════════════════════════
-
 class DeadlockRPC:
-    """Core engine that ties GSI, process detection, and Discord together."""
-
     def __init__(self):
         self.rpc: Presence | None = None
         self.gsi: GSIServer | None = None
@@ -318,8 +253,6 @@ class DeadlockRPC:
     def status(self, val: str):
         with self._lock:
             self._status = val
-
-    # ── Discord connection ─────────────────────────────────────────────
 
     def connect_discord(self) -> bool:
         if DISCORD_APP_ID == "YOUR_DISCORD_APP_ID_HERE":
@@ -352,13 +285,9 @@ class DeadlockRPC:
         self.rpc = None
         self.connected = False
 
-    # ── GSI ─────────────────────────────────────────────────────────────
-
     def start_gsi(self):
         self.gsi = GSIServer(port=GSI_PORT)
         self.gsi.start()
-
-    # ── Presence building ──────────────────────────────────────────────
 
     def _build_presence(self) -> dict:
         """Build RPC kwargs from all available data."""
@@ -368,7 +297,6 @@ class DeadlockRPC:
 
         gsi = self.gsi.state if self.gsi and not self.gsi.state.is_stale else None
 
-        # Hero
         hero_raw = gsi.get_hero_name() if gsi else None
         if hero_raw:
             hero = lookup_hero(hero_raw)
@@ -405,7 +333,7 @@ class DeadlockRPC:
         # Game mode (small image)
         mode = gsi.get_game_mode() if gsi else None
         if mode:
-            kwargs["small_image"] = "deadlock_icon"
+            kwargs["small_image"] = "deadlock_logo"
             kwargs["small_text"] = get_game_mode_display(mode)
 
         # Elapsed timer
@@ -419,25 +347,19 @@ class DeadlockRPC:
 
         # Fallback images
         if "large_image" not in kwargs:
-            kwargs["large_image"] = "deadlock_icon"
+            kwargs["large_image"] = "deadlock_logo"
             kwargs["large_text"] = "Deadlock"
 
-        return kwargs
-
-    # ── Main update tick ───────────────────────────────────────────────
+        return kwargs──
 
     def tick(self):
         if not self.enabled:
             return
-
-        # Ensure Discord is connected
         if not self.connected:
             if not self.connect_discord():
                 return
 
         game_running = is_deadlock_running()
-
-        # Game not running → clear
         if not game_running:
             if self.match_start is not None:
                 logger.info("Deadlock closed — clearing presence.")
@@ -448,8 +370,6 @@ class DeadlockRPC:
                     pass
             self.status = "Waiting for Deadlock..."
             return
-
-        # Track match start
         gsi = self.gsi.state if self.gsi and not self.gsi.state.is_stale else None
         if gsi:
             phase = gsi.get_game_state()
@@ -459,8 +379,6 @@ class DeadlockRPC:
 
         if self.match_start is None:
             self.match_start = time.time()
-
-        # Build and push
         kwargs = self._build_presence()
 
         try:
@@ -476,19 +394,11 @@ class DeadlockRPC:
         except Exception as e:
             logger.warning("Update failed: %s", e)
 
-    # ── Background loop ────────────────────────────────────────────────
-
     def run_loop(self):
         """Runs in a background thread."""
-        # Auto-install GSI config
         install_gsi_config()
-
-        # Start GSI server
         self.start_gsi()
-
-        # Initial Discord connection attempt
         self.connect_discord()
-
         self.status = "Waiting for Deadlock..."
         logger.info("Ready — waiting for Deadlock to launch.")
 
@@ -499,20 +409,12 @@ class DeadlockRPC:
                 logger.error("Loop error: %s", e)
             time.sleep(UPDATE_INTERVAL)
 
-        # Cleanup
         self.disconnect_discord()
 
     def stop(self):
         self._running = False
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  SYSTEM TRAY APPLICATION
-# ═══════════════════════════════════════════════════════════════════════════════
-
 class TrayApp:
-    """Wraps the RPC engine in a system tray icon."""
-
     def __init__(self):
         self.engine = DeadlockRPC()
         self.icon: pystray.Icon | None = None
@@ -561,7 +463,6 @@ class TrayApp:
     def run(self):
         logger.info("%s v%s starting...", APP_NAME, VERSION)
 
-        # Hide console window on Windows
         if platform.system() == "Windows":
             try:
                 ctypes.windll.user32.ShowWindow(
@@ -570,14 +471,11 @@ class TrayApp:
             except Exception:
                 pass
 
-        # Start RPC engine in background
         self._worker = threading.Thread(target=self.engine.run_loop, daemon=True)
         self._worker.start()
 
-        # Start tooltip updater
         threading.Thread(target=self._update_tooltip, daemon=True).start()
 
-        # Create and run tray icon (blocks on main thread)
         image = create_tray_icon_image()
         self.icon = pystray.Icon(
             name="deadlock-rpc",
@@ -587,21 +485,13 @@ class TrayApp:
         )
 
         logger.info("System tray icon active.")
-        self.icon.run()  # Blocks until icon.stop()
-
-        # After tray exits
+        self.icon.run()
         self.engine.stop()
         if self._worker:
             self._worker.join(timeout=5)
         logger.info("Goodbye!")
 
-
-# ═══════════════════════════════════════════════════════════════════════════════
-#  ENTRY POINT
-# ═══════════════════════════════════════════════════════════════════════════════
-
 def main():
-    # Prevent duplicate instances (simple file-lock approach)
     lock_path = LOG_DIR / ".lock"
     if platform.system() == "Windows":
         try:
@@ -611,7 +501,6 @@ def main():
             import msvcrt
             msvcrt.locking(lock_file.fileno(), msvcrt.LK_NBLCK, 1)
         except (OSError, ImportError):
-            # Already running or not on Windows — continue anyway
             pass
     else:
         try:
