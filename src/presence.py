@@ -4,7 +4,7 @@ import threading
 from pypresence import Presence, DiscordNotFound, PipeClosed
 
 from steam_utils import install_gsi_config, is_deadlock_running
-from gsi_server import GSIServer
+from src.server import GSIServer
 from heroes import lookup_hero, get_game_mode_display
 
 logger = logging.getLogger("deadlock-rpc")
