@@ -11,8 +11,6 @@ log = logging.getLogger(__name__)
 
 
 class PresenceManager:
-    """Manages the Discord Rich Presence connection and updates."""
-
     def __init__(self, client_id, api=None):
         self.client_id = client_id
         self.api = api or DeadlockAPI()
@@ -26,7 +24,6 @@ class PresenceManager:
         return self._connected
 
     def connect(self):
-        """Connect to Discord. Returns True on success."""
         if self._connected:
             return True
 
@@ -44,7 +41,6 @@ class PresenceManager:
             return False
 
     def disconnect(self):
-        """Disconnect from Discord."""
         if self._rpc and self._connected:
             try:
                 self._rpc.clear()
@@ -56,9 +52,8 @@ class PresenceManager:
         self._last_state_hash = None
 
     def update(self, game_state, match_info=None, game_launch_time=None, min_interval=15):
-        """Update Discord Rich Presence based on game state.
-
-        Args:
+        """
+       Args:
             game_state: Current GameState enum value.
             match_info: MatchInfo object if in a match.
             game_launch_time: Epoch timestamp when the game was launched.
@@ -122,7 +117,6 @@ class PresenceManager:
 
     def _update_in_match(self, info: MatchInfo):
         """Show detailed match information."""
-        # Build a state hash to avoid redundant updates
         state_hash = (
             f"match:{info.match_id}:{info.hero_id}"
             f":{info.net_worth_team_0}:{info.net_worth_team_1}"
@@ -130,12 +124,12 @@ class PresenceManager:
         if self._last_state_hash == state_hash:
             return
 
-        # Details line: hero name + game mode
+        #hero name + game mode
         details = f"Playing {info.hero_name}"
         if info.game_mode:
             details += f" | {info.game_mode}"
 
-        # State line: team + net worth comparison
+        #team + net worth comparison
         state_parts = []
         if info.team_name:
             state_parts.append(info.team_name)
@@ -147,7 +141,7 @@ class PresenceManager:
 
         state = " | ".join(state_parts) if state_parts else "In Match"
 
-        # Hero image
+        #hero image
         hero_image = ""
         hero_text = info.hero_name
         if info.hero_id:
@@ -162,11 +156,11 @@ class PresenceManager:
             "small_text": "Deadlock",
         }
 
-        # Match start timestamp for elapsed time
+        #match start timestamp for elapsed time
         if info.start_time:
             kwargs["start"] = int(info.start_time)
 
-        # Party info
+        #party info
         if info.party_size > 1:
             kwargs["party_id"] = f"match_{info.match_id}"
             kwargs["party_size"] = [info.party_size, info.party_max]
@@ -178,7 +172,6 @@ class PresenceManager:
 
     @staticmethod
     def _format_souls(value):
-        """Format a soul/net worth value for display (e.g., 12500 -> 12.5k)."""
         if not value:
             return "0"
         if value >= 1000:

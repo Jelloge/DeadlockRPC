@@ -1,13 +1,9 @@
-"""Configuration and constants for DeadlockRPC."""
-
 import json
 import os
 import sys
 
-# Discord Application ID - users must create their own at https://discord.com/developers/applications
-# Set the application name to "Deadlock" for best results
-DEFAULT_DISCORD_APP_ID = ""
-DEADLOCK_PROCESS_NAME = "project8.exe"
+DEFAULT_DISCORD_APP_ID = "1474302474474094634"
+DEADLOCK_PROCESS_NAME = "project8.exe, deadlock.exe"
 DEADLOCK_API_BASE = "https://api.deadlock-api.com/v1"
 DEADLOCK_ASSETS_API = "https://assets.deadlock-api.com/v2"
 HERO_IMAGE_BASE = "https://assets-bucket.deadlock-api.com/assets-api-res/images/heroes"
@@ -17,9 +13,7 @@ PROCESS_CHECK_INTERVAL = 5
 MATCH_POLL_INTERVAL = 30
 PRESENCE_UPDATE_INTERVAL = 15
 
-# Config file path
 CONFIG_FILE = os.path.join(os.path.dirname(os.path.abspath(sys.argv[0])), "config.json")
-
 
 def load_config():
     """Load user configuration from config.json."""

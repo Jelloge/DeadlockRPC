@@ -1,5 +1,3 @@
-"""Monitors Deadlock game state via process detection and API polling."""
-
 import logging
 import time
 from enum import Enum
