@@ -22,7 +22,7 @@ try:
 except ImportError:
     sys.exit("pystray/Pillow not installed. Run: pip install pystray Pillow")
 
-from heroes import lookup_hero, get_game_mode_display
+from mapping import lookup_hero, get_game_mode_display
 from gsi_server import GSIServer
 
 DISCORD_APP_ID = "1474302474474094634"
@@ -336,7 +336,7 @@ class DeadlockRPC:
             kwargs["small_image"] = "deadlock_logo"
             kwargs["small_text"] = get_game_mode_display(mode)
 
-        # Elapsed timer
+        # Eelapsed timer
         if self.match_start:
             kwargs["start"] = int(self.match_start)
 
@@ -345,12 +345,12 @@ class DeadlockRPC:
         if state_parts:
             kwargs["state"] = " | ".join(state_parts)
 
-        # Fallback images
+        # fallback images, if not in matches or w/e
         if "large_image" not in kwargs:
             kwargs["large_image"] = "deadlock_logo"
             kwargs["large_text"] = "Deadlock"
 
-        return kwargs──
+        return kwargs
 
     def tick(self):
         if not self.enabled:
