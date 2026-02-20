@@ -40,7 +40,7 @@ from gsi_server import GSIServer
 #  2. Create a new application named "Deadlock"
 #  3. Paste the Application ID below
 #  4. Go to Rich Presence > Art Assets and upload:
-#       - "deadlock_logo"    → Deadlock game icon
+#       - "deadlock_icon"    → Deadlock game icon (fallback when no hero selected)
 #       - "hero_abrams"      → Abrams portrait
 #       - "hero_haze"        → Haze portrait
 #       - ... (see heroes.py for the full asset key list)
@@ -405,7 +405,7 @@ class DeadlockRPC:
         # Game mode (small image)
         mode = gsi.get_game_mode() if gsi else None
         if mode:
-            kwargs["small_image"] = "deadlock_logo"
+            kwargs["small_image"] = "deadlock_icon"
             kwargs["small_text"] = get_game_mode_display(mode)
 
         # Elapsed timer
@@ -419,7 +419,7 @@ class DeadlockRPC:
 
         # Fallback images
         if "large_image" not in kwargs:
-            kwargs["large_image"] = "deadlock_logo"
+            kwargs["large_image"] = "deadlock_icon"
             kwargs["large_text"] = "Deadlock"
 
         return kwargs
