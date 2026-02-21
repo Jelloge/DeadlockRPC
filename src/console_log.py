@@ -196,7 +196,7 @@ class LogWatcher:
         """Parse a single console line. Returns True if state changed."""
         old_phase = self.state.phase
         old_hero = self.state.hero_key
-        old_mode = self.state.match_mode
+        old_mode = self.state.match_mode 
 
         # Map: "dl_hideout" or "street_test" etc.
         if m := self._match("map_info", line):
@@ -208,13 +208,31 @@ class LogWatcher:
                     self.state.phase = GamePhase.PARTY_HIDEOUT if self.state.in_party else GamePhase.HIDEOUT
                     self._hideout_loaded = True
                     self._bot_init_count = 0
-                    self.state.match_start_time = time.time()  #timer for hideout duration
 
                 elif map_name in self.match_maps:
                     self.state.phase = GamePhase.IN_MATCH
                     self.state.hero_key = None  #reset hero, will be detected from Loaded hero
                     self.state.match_start_time = time.time()
                     self._hideout_loaded = False
+
+        # Matchmaking start
+        elif self._match("mm_start", line):
+            if self.state.phase in (GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT, GamePhase.MAIN_MENU):
+                self.state.enter_queue()
+
+        # Matchmaking stop (cancel)
+        elif self._match("mm_stop", line):
+            if self.state.phase == GamePhase.IN_QUEUE:
+                self.state.leave_queue()
+
+        # If we connect to a real server while queued, stop queue
+        elif m := self._match("server_connect", line):
+            addr = m.group(1)
+            self.state.connect_to_server(addr)
+
+            if self.state.phase == GamePhase.IN_QUEUE:
+                if "loopback" not in addr.lower():
+                    self.state.queue_start_time = None  #stop the "Finding Match" timer
 
         # [Server] Loaded hero 458/hero_inferno
         elif m := self._match("loaded_hero", line):
@@ -247,7 +265,7 @@ class LogWatcher:
                     self.state.enter_hero_select()
                 elif state_name == "matchintro" or state_id == 4:
                     self.state.enter_match_intro()
-                elif state_name == "inprogress" or state_id == 5:
+                elif state_name in ("gameinprogress", "inprogress") or state_id in (7,):
                     self.state.start_match()
                 elif state_name == "postgame" or state_id == 6:
                     self.state.end_match()
@@ -272,10 +290,6 @@ class LogWatcher:
             map_name = m.group(1).lower().strip()
             if map_name in self.hideout_maps:
                 self._hideout_loaded = True
-
-        #Server connect 
-        elif m := self._match("server_connect", line):
-            self.state.connect_to_server(m.group(1))
 
         #Server shutdown
         elif m := self._match("server_shutdown", line):

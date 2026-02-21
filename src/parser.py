@@ -3,6 +3,7 @@ import re
 import sys
 from pathlib import Path
 from collections import defaultdict
+from console_log import LogWatcher
 
 PRIMARY = {
     "ChangeGameState":    r"ChangeGameState:\s+\w+\s+\(\d+\)",

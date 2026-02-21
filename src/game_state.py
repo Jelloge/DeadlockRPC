@@ -15,7 +15,6 @@ class GamePhase(Enum):
     HIDEOUT       = auto()
     PARTY_HIDEOUT = auto()
     IN_QUEUE      = auto()
-    HERO_SELECT   = auto()
     MATCH_INTRO   = auto()
     IN_MATCH      = auto()
     POST_MATCH    = auto()
@@ -63,7 +62,7 @@ MODE_DISPLAY: dict[MatchMode, str] = {
 # Console.log uses these as: "Loaded hero 458/hero_inferno"
 # or "Created bot 460/hero_gigawatt/hero_gigawatt"
 HEROES: dict[str, str] = {
-    # ── Released / Playable heroes ──
+    # Released / Playable heroe
     "atlas":        "Abrams",
     "astro":        "Holliday",
     "bebop":        "Bebop",
@@ -226,10 +225,6 @@ class GameState:
     def leave_queue(self) -> None:
         self.queue_start_time = None
         self.enter_hideout()
-
-    def enter_hero_select(self) -> None:
-        self.phase = GamePhase.HERO_SELECT
-        self.game_state_id = 3
 
     def enter_match_intro(self) -> None:
         self.phase = GamePhase.MATCH_INTRO

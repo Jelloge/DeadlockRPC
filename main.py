@@ -10,7 +10,7 @@ import threading
 import time
 from pathlib import Path
 
-from parsing import GamePhase, GameState
+from game_state import GamePhase, GameState
 from logger import LogWatcher
 from presence import DiscordRPC
 from server_query import query_server
