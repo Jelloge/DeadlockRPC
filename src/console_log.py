@@ -214,6 +214,11 @@ class LogWatcher:
                     self.state.phase = GamePhase.IN_MATCH
                     self.state.match_start_time = time.time()
                     self._hideout_loaded = False
+                
+                elif map_name in self.sandbox_maps:
+                    self.state.match_mode = MatchMode.SANDBOX
+                    self.state.phase = GamePhase.IN_MATCH
+                    self.state.match_start_time = time.time()
 
         # Matchmaking start
         elif self._match("mm_start", line):
