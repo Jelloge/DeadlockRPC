@@ -11,9 +11,8 @@ import time
 from pathlib import Path
 
 from game_state import GamePhase, GameState
-from logger import LogWatcher
+from console_log import LogWatcher
 from presence import DiscordRPC
-from server_query import query_server
 
 LOG_DIR = Path(__file__).parent / "logs"
 LOG_DIR.mkdir(exist_ok=True)
@@ -69,13 +68,16 @@ def find_deadlock_path(config: dict) -> Path | None:
     return None
 
 
-def find_tray_icon() -> Path | None:
-    """Find the tray icon in the assets folder."""
-    assets_dir = SCRIPT_DIR / "assets"
-    for name in ["deadlock.ico", "deadlock.png"]:
-        p = assets_dir / name
-        if p.exists():
-            return p
+from pathlib import Path
+
+def find_tray_icon():
+    icon_path = Path(__file__).parent / "favicon.ico"
+
+    if icon_path.exists():
+        logger.info("Using tray icon: favicon.ico")
+        return str(icon_path)
+
+    logger.warning("favicon.ico not found in src/")
     return None
 
 
@@ -149,7 +151,7 @@ def create_tray_icon(app: "DeadlockRPC"):
         menu=menu,
     )
 
-    # update tooltip dynamically
+    # update tooltip
     def update_tooltip():
         while app.running:
             try:

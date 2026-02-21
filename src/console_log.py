@@ -191,7 +191,8 @@ class LogWatcher:
 
             time.sleep(poll_interval)
 
-    # God I hope these work
+    # God I hope these work 
+    # PLEASE SPEED I NEED THIS
     def _process_line(self, line: str) -> bool:
         """Parse a single console line. Returns True if state changed."""
         old_phase = self.state.phase
