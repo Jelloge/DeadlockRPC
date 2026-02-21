@@ -262,9 +262,7 @@ class LogWatcher:
             self.state.game_state_id = state_id
 
             if not self._hideout_loaded:
-                if state_name == "heroselection" or state_id == 3:
-                    self.state.enter_hero_select()
-                elif state_name == "matchintro" or state_id == 4:
+                if state_name == "matchintro" or state_id == 4:
                     self.state.enter_match_intro()
                 elif state_name in ("gameinprogress", "inprogress") or state_id in (7,):
                     self.state.start_match()

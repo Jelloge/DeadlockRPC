@@ -29,6 +29,8 @@
         "server_disconnect":    "\\[Client\\] Disconnecting from server:\\s+(\\S+)",
         "server_shutdown":      "\\[Server\\] SV:\\s+Server shutting down:\\s+(\\S+)",
         "map_load":             "\\[HostStateManager\\].*Loading \\(([^)]+)\\)",
+        "silver_wolf_form_on":  "werewolf_transform\\.vmdl",
+        "silver_wolf_form_off": "werewolf_(untransform|revert)\\.vmdl",
         "queue_start":          "ui_hideout_findingmatch_corner\\.vpcf",
         "mm_start":             "\\[GCClient\\] Send msg 9010 \\(k_EMsgClientToGCStartMatchmaking\\)",
         "mm_stop":              "\\[GCClient\\] Send msg 9012 \\(k_EMsgClientToGCStopMatchmaking\\)",

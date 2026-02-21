@@ -110,12 +110,6 @@ class DiscordRPC:
                 if state.in_party:
                     p["party_size"] = [state.party_size, PARTY_MAX]
 
-            case GamePhase.HERO_SELECT:
-                p["details"] = "Hero Selection"
-                p["state"] = "Picking a hero..."
-                p["large_image"] = logo
-                p["large_text"] = logo_text
-
             case GamePhase.MATCH_INTRO:
                 p["details"] = state.mode_display()
                 p["state"] = "Match starting..."

@@ -161,6 +161,7 @@ class GameState:
     phase: GamePhase           = GamePhase.NOT_RUNNING
     match_mode: MatchMode      = MatchMode.UNKNOWN
     hero_key: Optional[str]    = None          # internal codename
+    is_transformed: bool =      False
     party_size: int            = 1             # 1 = solo
     server_address: Optional[str] = None       # ip:port from console
     map_name: Optional[str]    = None
@@ -184,7 +185,14 @@ class GameState:
         """Returns the Discord asset key for the current hero."""
         if self.hero_key is None:
             return None
-        return f"hero_{self.hero_key.lower()}"
+
+        key = self.hero_key.lower()
+
+        # Silver (werewolf) transform swap
+        if key in ("werewolf", "silver") and self.is_transformed:
+            return "hero_werewolf_wolf"
+
+        return f"hero_{key}"
 
     @property
     def in_party(self) -> bool:
@@ -192,7 +200,7 @@ class GameState:
 
     @property
     def is_in_match(self) -> bool:
-        return self.phase in (GamePhase.IN_MATCH, GamePhase.MATCH_INTRO, GamePhase.HERO_SELECT)
+        return self.phase in (GamePhase.IN_MATCH, GamePhase.MATCH_INTRO)
 
     @property
     def elapsed_match_seconds(self) -> Optional[int]:
@@ -244,11 +252,10 @@ class GameState:
         self.game_state_id = 6
 
     def set_hero(self, hero_key: str) -> None:
-        """Set hero from internal codename (with or without hero_ prefix)."""
-        normalized = hero_key.lower().strip()
-        if normalized.startswith("hero_"):
-            normalized = normalized[5:]
-        self.hero_key = normalized
+        normalized = hero_key.lower().replace("hero_", "")
+        if normalized != self.hero_key:
+            self.hero_key = normalized
+            self.is_transformed = False  # reset form on hero change, doing this for silver
 
     def set_party_size(self, size: int) -> None:
         self.party_size = max(1, size)
@@ -280,6 +287,7 @@ class GameState:
         self.server_address = None
         self.map_name = None
         self.game_state_id = None
+        self.is_transformed = False
         self.bot_count = 0
         self.bot_difficulty = None
 
@@ -290,6 +298,7 @@ class GameState:
         self.hero_key = None
         self.party_size = 1
         self.server_address = None
+        self.is_transformed = False
         self.map_name = None
         self.match_start_time = None
         self.queue_start_time = None
