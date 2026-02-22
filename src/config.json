@@ -17,7 +17,7 @@
         "queue_icon": "deadlock_icon"
     },
 
-    "hero_asset_prefix": "hero_",
+    "hero_asset_prefix": "hero_", 
 
     "log_patterns": {
         "change_game_state":    "ChangeGameState:\\s+(\\w+)\\s+\\((\\d+)\\)",
