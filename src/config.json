@@ -14,9 +14,9 @@
     "resync_max_bytes": 10485760,
 
     "discord_assets": {
-        "logo": "deadlock_logo",
+        "logo": "deadlock_icon",
         "logo_text": "Deadlock",
-        "queue_icon": "deadlock_logo"
+        "queue_icon": "deadlock_icon"
     },
 
     "hero_asset_prefix": "hero_",
@@ -45,7 +45,9 @@
         "source2_shutdown":     "Source2Shutdown",
         "signon_full":          "\\[SignonState\\] Client 0 '([^']+)' signon state \\w+ -> SIGNONSTATE_FULL",
         "precaching_heroes":    "Precaching (\\d+) heroes in CCitadelGameRules",
-        "loop_mode_menu":       "LoopMode:\\s*menu"
+        "loop_mode_menu":       "LoopMode:\\s*menu",
+        "lobby_created":        "Lobby\\s+\\d+\\s+for\\s+Match\\s+\\d+\\s+created",
+        "lobby_destroyed":      "Lobby\\s+\\d+\\s+for\\s+Match\\s+\\d+\\s+destroyed"
     },
 
     "hideout_maps": ["dl_hideout"],

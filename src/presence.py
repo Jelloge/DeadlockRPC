@@ -103,8 +103,6 @@ class DiscordRPC:
                 p["large_text"] = state.hero_display_name or logo_text
                 p["small_image"] = self.assets.get("queue_icon", logo)
                 p["small_text"] = "Searching"
-                if state.queue_start_time:
-                    p["start"] = int(state.queue_start_time)
                 if state.in_party:
                     p["party_size"] = [state.party_size, PARTY_MAX]
 

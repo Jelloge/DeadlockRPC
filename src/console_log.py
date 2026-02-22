@@ -249,6 +249,15 @@ class LogWatcher:
             if self.state.phase == GamePhase.IN_QUEUE:
                 self.state.leave_queue()
 
+        # Lobby created — match found, start the match timer
+        elif self._match("lobby_created", line):
+            self.state.match_start_time = time.time()
+            self.state.queue_start_time = None
+
+        # Lobby destroyed — match is over
+        elif self._match("lobby_destroyed", line):
+            self.state.end_match()
+
         # If we connect to a real server while queued, stop queue timer
         elif m := self._match("server_connect", line):
             addr = m.group(1)
@@ -285,27 +294,17 @@ class LogWatcher:
         elif self._match("silver_wolf_form_off", line):
             self.state.is_transformed = False
 
-        # Disconnect / back to menu
+        # Disconnect — stay in POST_MATCH while loading back to hideout
         elif m := self._match("server_disconnect", line):
             reason = m.group(1)
             if "EXITING" in reason.upper():
                 self.state.reset()
-            elif self.state.phase == GamePhase.IN_MATCH:
-                self.state.phase = GamePhase.MAIN_MENU
-                self.state.hero_key = None
-                self.state.match_start_time = None
-                self.state.map_name = None
-                self.state.match_mode = MatchMode.UNKNOWN
-                self.state.bot_difficulty = None
+            elif self.state.phase in (GamePhase.IN_MATCH, GamePhase.MATCH_INTRO):
+                self.state.end_match()
 
         elif self._match("loop_mode_menu", line):
-            if self.state.phase == GamePhase.IN_MATCH:
-                self.state.phase = GamePhase.MAIN_MENU
-                self.state.hero_key = None
-                self.state.match_start_time = None
-                self.state.map_name = None
-                self.state.match_mode = MatchMode.UNKNOWN
-                self.state.bot_difficulty = None
+            if self.state.phase in (GamePhase.IN_MATCH, GamePhase.MATCH_INTRO):
+                self.state.end_match()
 
         elif m := self._match("change_game_state", line):
             state_name = m.group(1).lower()
