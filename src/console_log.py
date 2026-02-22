@@ -206,9 +206,10 @@ class LogWatcher:
 
         self.state.map_name = map_name
 
-        # Map -> mode (Standard / Street Brawl / Sandbox / etc.)
+        # Map -> mode (only for maps with a known specific mode, e.g. sandbox)
+        # dl_midtown is shared by all match types so it maps to UNKNOWN
         mapped_mode = self.map_to_mode.get(map_name)
-        if mapped_mode:
+        if mapped_mode and mapped_mode != MatchMode.UNKNOWN:
             self.state.match_mode = mapped_mode
 
         # Hideout maps
@@ -354,10 +355,18 @@ class LogWatcher:
         elif self._match("app_shutdown", line) or self._match("source2_shutdown", line):
             self.state.reset()
 
-        # Player info
+        # Player info — also infer match mode from player count
+        # Standard 6v6: 12 online, 6 co-op bots
+        # Street Brawl 4v4: 8 online, 4 co-op bots
         elif m := self._match("player_info", line):
             self.state.player_count = int(m.group(1))
             self.state.bot_count = int(m.group(2))
+
+            count = self.state.player_count
+            if count in (6, 12):
+                self.state.match_mode = MatchMode.UNRANKED
+            elif count in (4, 8):
+                self.state.match_mode = MatchMode.STREET_BRAWL
 
         # (>0 means real match loading)
         elif m := self._match("precaching_heroes", line):
