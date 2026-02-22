@@ -37,6 +37,7 @@
         "mm_stop":              "\\[GCClient\\] Send msg 9012 \\(k_EMsgClientToGCStopMatchmaking\\)",
         "host_activate":        "\\[HostStateManager\\] Host activate:.*\\(([^)]+)\\)",
         "loaded_hero":          "\\[Server\\] Loaded hero \\d+/(hero_\\w+)",
+        "client_hero_vmdl":     "VMDL Camera Pose Success!.*models/heroes(?:_wip)?/(\\w+)/",
         "bot_init":             "Initializing bot for player slot \\d+:\\s+(k_ECitadelBotDifficulty_\\w+)",
         "player_info":          "\\[Client\\] Players:\\s+(\\d+)\\s+\\((\\d+) bots\\)\\s+/\\s+(\\d+) humans",
         "map_info":             "\\[Client\\] Map:\\s+\"([^\"]+)\"",

@@ -256,7 +256,7 @@ class LogWatcher:
             if self.state.phase == GamePhase.IN_QUEUE and "loopback" not in addr.lower():
                 self.state.queue_start_time = None
 
-        # Hero loading (prevents bogus startup Atlas from haunting RPC)
+        # Hero loading — local server (hideout / sandbox / bots)
         elif m := self._match("loaded_hero", line):
             hero_norm = m.group(1).lower().replace("hero_", "")
 
@@ -272,6 +272,11 @@ class LogWatcher:
 
             if not bogus_startup_atlas:
                 self.state.set_hero(hero_norm)
+
+        # Hero loading — client-side VMDL signal (works in remote matches)
+        elif m := self._match("client_hero_vmdl", line):
+            hero_norm = m.group(1).lower()
+            self.state.set_hero(hero_norm)
 
         elif self._match("silver_wolf_form_on", line):
             self.state.is_transformed = True
