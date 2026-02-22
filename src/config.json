@@ -50,9 +50,9 @@
     "hideout_maps": ["dl_hideout"],
 
     "map_to_mode": {
-        "street_test":          "standard",
-        "start":                "standard",
-        "street_test_bridge":   "standard",
+        "street_test":          "unranked",
+        "start":                "unranked",
+        "street_test_bridge":   "unranked",
         "new_player_basics":    "sandbox",
         "dl_midtown": "street_brawl"
     }

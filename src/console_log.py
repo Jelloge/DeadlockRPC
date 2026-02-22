@@ -37,7 +37,7 @@ class LogWatcher:
         self._stop_flag = False
         self.patterns: dict[str, re.Pattern] = {}
 
-        # map_name -> MatchMode (from config.json map_to_mode)
+        # map_name -> MatchMode
         self.map_to_mode: dict[str, MatchMode] = {}
         raw_map_to_mode = map_to_mode or {}
         for map_name, mode_name in raw_map_to_mode.items():
@@ -203,7 +203,7 @@ class LogWatcher:
             old_phase = self.state.phase
             old_hero = self.state.hero_key
             old_mode = self.state.match_mode
-            old_transformed = self.state.is_transformed  # <-- Added state tracker
+            old_transformed = self.state.is_transformed
 
             if m := (self._match("map_info", line) or self._match("map_physics", line)):
                 map_name = m.group(1).lower()
@@ -233,7 +233,7 @@ class LogWatcher:
                 if self.state.phase in (GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT, GamePhase.MAIN_MENU):
                     self.state.enter_queue()
 
-            # Matchmaking stop (cancel)
+            # Matchmaking stop
             elif self._match("mm_stop", line):
                 if self.state.phase == GamePhase.IN_QUEUE:
                     self.state.leave_queue()
@@ -246,18 +246,27 @@ class LogWatcher:
                 if self.state.phase == GamePhase.IN_QUEUE and "loopback" not in addr.lower():
                     self.state.queue_start_time = None  # stop the "Finding Match" timer
 
-            # [Server] Loaded hero 458/hero_inferno
+            # THIS IS PROBABLY A TERRIBLE WAY TO DO IT 
+            # BUT I DON'T KNOW HOW TO GET RID OF ABRAMS HAUNTING THE RPC UPON STARTUP
             elif m := self._match("loaded_hero", line):
-                hero_raw = m.group(1)
-                self.state.set_hero(hero_raw)
+                hero_raw = m.group(1).lower()              
+                # IGNORE INITIAL ABRAMS
+                if self.state.phase in (GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT):
+                    if hero_raw == "atlas" and self.state.hero_key is None:
+                        pass
+                    else:
+                        self.state.set_hero(hero_raw)
+                
+                # LOCK IN VERY FIRST HERO LOADED IN MATCH
+                else:
+                    if self.state.hero_key is None:
+                        self.state.set_hero(hero_raw)
 
-            # -- ADDED: Silver/Werewolf transformation checks --
             elif self._match("silver_wolf_form_on", line):
                 self.state.is_transformed = True
 
             elif self._match("silver_wolf_form_off", line):
                 self.state.is_transformed = False
-            # ------------------------------------------------
 
             # disconnect / back to menu
             elif m := self._match("server_disconnect", line):
@@ -300,7 +309,7 @@ class LogWatcher:
                 if lobby_id == 0:
                     self.state.party_size = 1
                 elif lobby_id > 0:
-                    # We only know "in party" from this line, not exact count.
+                    # We only know "in party" from this line.
                     self.state.set_party_size(max(2, self.state.party_size))
 
                 # Keep hideout phase label in sync with party status
@@ -335,13 +344,12 @@ class LogWatcher:
                 self.state.player_count = int(m.group(1))
                 self.state.bot_count = int(m.group(2))
 
-            # Precaching heroes (>0 means real match loading)
+            # (>0 means real match loading)
             elif m := self._match("precaching_heroes", line):
                 count = int(m.group(1))
                 if count > 0:
                     self._hideout_loaded = False
 
-            # -- ADDED: Return statement now checks for transformation changes --
             return (
                 self.state.phase != old_phase
                 or self.state.hero_key != old_hero
