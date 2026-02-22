@@ -2,8 +2,6 @@ import json
 import re
 import sys
 from pathlib import Path
-from collections import defaultdict
-from console_log import LogWatcher
 
 PRIMARY = {
     "ChangeGameState":    r"ChangeGameState:\s+\w+\s+\(\d+\)",
@@ -67,7 +65,7 @@ def replay(log_path: str, config_path: str = "config.json"):
     watcher = LogWatcher(
         log_path=log_path, state=state,
         patterns=config.get("log_patterns", {}),
-        match_maps=config.get("map_to_mode", []),
+        map_to_mode=config.get("map_to_mode", {}),
         hideout_maps=config.get("hideout_maps", ["dl_hideout"]),
         process_names=[],
     )

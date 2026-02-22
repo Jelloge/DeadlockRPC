@@ -7,16 +7,6 @@ from pathlib import Path
 
 logger = logging.getLogger("deadlock-rpc")
 
-def find_tray_icon():
-    icon_path = Path(__file__).parent / "favicon.ico"
-
-    if icon_path.exists():
-        logger.info("Using tray icon: favicon.ico")
-        return str(icon_path)
-
-    logger.warning("favicon.ico not found in src/")
-    return None
-
 def create_tray_icon(app):
     """Create and run the system tray icon."""
     try:
@@ -29,12 +19,12 @@ def create_tray_icon(app):
         )
         return None
 
-    icon_path = find_tray_icon()
-    if icon_path:
+    icon_path = Path(__file__).parent / "favicon.ico"
+    if icon_path.exists():
         logger.info("Tray icon: %s", icon_path)
         image = Image.open(icon_path)
     else:
-        logger.warning("No icon found.")
+        logger.warning("favicon.ico not found, using fallback icon")
         image = Image.new("RGB", (64, 64), color=(139, 92, 246))  # purple square
 
     def get_status_text():

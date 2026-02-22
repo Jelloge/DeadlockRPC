@@ -267,21 +267,6 @@ class GameState:
         self.server_address = address
         self.is_loopback = "loopback" in address.lower()
 
-    def disconnect(self, reason: str = "") -> None:
-        reason_upper = reason.upper()
-        if "EXITING" in reason_upper:
-            self.reset()
-        elif "LOOPDEACTIVATE" in reason_upper:
-            self.server_address = None
-            self.is_loopback = False
-        elif "SHUTDOWN" in reason_upper:
-            if self.phase == GamePhase.IN_MATCH:
-                self.end_match()
-            else:
-                self.server_address = None
-        else:
-            self.enter_hideout()
-
     def _clear_match(self) -> None:
         self.match_mode = MatchMode.UNKNOWN
         self.match_start_time = None

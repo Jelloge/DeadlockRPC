@@ -70,9 +70,8 @@ def find_deadlock_path(config: dict) -> Path | None:
 
 class DeadlockRPC:
 
-    def __init__(self, config_path: str = "config.json"):
-        with open(config_path) as f:
-            self.config = json.load(f)
+    def __init__(self, config: dict):
+        self.config = config
 
         self.state = GameState()
         self.running = False
@@ -185,7 +184,7 @@ def main():
 
     logger.info("Starting Deadlock Discord Rich Presence...")
 
-    app = DeadlockRPC(config_path)
+    app = DeadlockRPC(cfg)
 
     # start the RPC
     app.start()

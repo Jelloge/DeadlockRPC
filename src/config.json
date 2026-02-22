@@ -1,8 +1,6 @@
 {
     "discord_application_id": "1474302474474094634",
 
-    "deadlock_app_id": 1422450,
-
     "deadlock_install_path": "C:/Program Files (x86)/Steam/steamapps/common/Deadlock",
 
     "console_log_relative_path": "game/citadel/console.log",
@@ -23,16 +21,13 @@
 
     "log_patterns": {
         "change_game_state":    "ChangeGameState:\\s+(\\w+)\\s+\\((\\d+)\\)",
-        "hltv_game_state":      "Citadel HLTV Director, Entering game state:\\s+(\\d+)\\s+\\((\\w+)\\)",
         "hideout_lobby_state":  "\\[Hideout\\] Hideout Lobby Connection State:\\s+(\\w+)\\s+\\((-?\\d+)\\)",
         "server_connect":       "\\[Client\\] CL:\\s+Connected to '([^']+)'",
         "server_disconnect":    "\\[Client\\] Disconnecting from server:\\s+(\\S+)",
         "server_shutdown":      "\\[Server\\] SV:\\s+Server shutting down:\\s+(\\S+)",
-        "map_load":             "\\[HostStateManager\\].*Loading \\(([^)]+)\\)",
         "map_created_physics": "\\[Client\\] Created physics for\\s+([^\\s]+)",
         "silver_wolf_form_on":  "werewolf_transform\\.vmdl",
         "silver_wolf_form_off": "werewolf\\.vmdl",
-        "queue_start":          "ui_hideout_findingmatch_corner\\.vpcf",
         "mm_start":             "\\[GCClient\\] Send msg 9010 \\(k_EMsgClientToGCStartMatchmaking\\)",
         "mm_stop":              "\\[GCClient\\] Send msg 9012 \\(k_EMsgClientToGCStopMatchmaking\\)",
         "host_activate":        "\\[HostStateManager\\] Host activate:.*\\(([^)]+)\\)",
@@ -43,7 +38,6 @@
         "map_info":             "\\[Client\\] Map:\\s+\"([^\"]+)\"",
         "app_shutdown":         "Dispatching EventAppShutdown_t",
         "source2_shutdown":     "Source2Shutdown",
-        "signon_full":          "\\[SignonState\\] Client 0 '([^']+)' signon state \\w+ -> SIGNONSTATE_FULL",
         "precaching_heroes":    "Precaching (\\d+) heroes in CCitadelGameRules",
         "loop_mode_menu":       "LoopMode:\\s*menu",
         "lobby_created":        "Lobby\\s+\\d+\\s+for\\s+Match\\s+\\d+\\s+created",
