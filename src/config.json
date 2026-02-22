@@ -16,7 +16,7 @@
     "discord_assets": {
         "logo": "deadlock_logo",
         "logo_text": "Deadlock",
-        "queue_icon": "queue_icon"
+        "queue_icon": "deadlock_logo"
     },
 
     "hero_asset_prefix": "hero_",
@@ -29,7 +29,7 @@
         "server_disconnect":    "\\[Client\\] Disconnecting from server:\\s+(\\S+)",
         "server_shutdown":      "\\[Server\\] SV:\\s+Server shutting down:\\s+(\\S+)",
         "map_load":             "\\[HostStateManager\\].*Loading \\(([^)]+)\\)",
-        "map_physics":          "\\[Client\\] Created physics for (\\w+)",
+        "map_created_physics": "\\[Client\\] Created physics for\\s+([^\\s]+)",
         "silver_wolf_form_on":  "werewolf_transform\\.vmdl",
         "silver_wolf_form_off": "werewolf\\.vmdl",
         "queue_start":          "ui_hideout_findingmatch_corner\\.vpcf",
