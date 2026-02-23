@@ -12,9 +12,9 @@
     "resync_max_bytes": 10485760,
 
     "discord_assets": {
-        "logo": "deadlock_icon",
+        "logo": "deadlock_logo",
         "logo_text": "Deadlock",
-        "queue_icon": "deadlock_icon"
+        "queue_icon": "deadlock_logo"
     },
 
     "hero_asset_prefix": "hero_", 
