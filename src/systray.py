@@ -1,11 +1,17 @@
 import logging
 import os
 import platform
+import sys
 import threading
 import time
 from pathlib import Path
 
 logger = logging.getLogger("deadlock-rpc")
+
+def _bundle_dir() -> Path:
+    """Return the directory containing bundled data files."""
+    meipass = getattr(sys, "_MEIPASS", None)
+    return Path(meipass) if meipass else Path(__file__).parent
 
 def create_tray_icon(app):
     """Create and run the system tray icon."""
@@ -18,7 +24,7 @@ def create_tray_icon(app):
         )
         return None
 
-    icon_path = Path(__file__).parent / "favicon.ico"
+    icon_path = _bundle_dir() / "favicon.ico"
     if icon_path.exists():
         logger.info("Tray icon: %s", icon_path)
         image = Image.open(icon_path)
@@ -42,7 +48,9 @@ def create_tray_icon(app):
 
     def on_open_log(icon, item):
         """Open the log file."""
-        log_file = Path(__file__).parent / "logs" / "deadlock_rpc.log"
+        meipass = getattr(sys, "_MEIPASS", None)
+        base = Path(sys.executable).parent if meipass else Path(__file__).parent
+        log_file = base / "logs" / "deadlock_rpc.log"
         if log_file.exists():
             if platform.system() == "Windows":
                 os.startfile(str(log_file))

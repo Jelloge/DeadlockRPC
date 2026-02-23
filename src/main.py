@@ -16,7 +16,11 @@ from condebug import launch as launch_deadlock
 from presence import DiscordRPC
 from systray import create_tray_icon
 
-LOG_DIR = Path(__file__).parent / "logs"
+_FROZEN = getattr(sys, "_MEIPASS", None)
+BUNDLE_DIR = Path(_FROZEN) if _FROZEN else Path(__file__).parent
+EXE_DIR = Path(sys.executable).parent if _FROZEN else Path(__file__).parent
+
+LOG_DIR = EXE_DIR / "logs"
 LOG_DIR.mkdir(exist_ok=True)
 
 LOG_LEVEL = os.environ.get("DEADLOCK_RPC_LOG", "INFO").upper()
@@ -31,7 +35,7 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger("deadlock-rpc")
-SCRIPT_DIR = Path(__file__).parent
+SCRIPT_DIR = BUNDLE_DIR
 
 def find_deadlock_path(config: dict) -> Path | None:
     if config.get("deadlock_install_path"):

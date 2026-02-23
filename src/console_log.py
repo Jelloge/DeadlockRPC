@@ -359,19 +359,20 @@ class LogWatcher:
         elif self._match("app_shutdown", line) or self._match("source2_shutdown", line):
             self.state.reset()
 
-        # Player info also infer match mode from player count
-        # Standard 6v6: 12 online 6 co-op bots
-        # Street Brawl 4v4: 8 online 4 co-op bots
+        # Player info also get match mode from player count
+        # Standard 6v6: 12 online 6 coop bots
+        # Street Brawl 4v4: 8 online 4 coop bots
         elif m := self._match("player_info", line):
             if self.state.phase != GamePhase.SPECTATING:
                 self.state.player_count = int(m.group(1))
                 self.state.bot_count = int(m.group(2))
 
                 count = self.state.player_count
-                if count in (6, 12):
-                    self.state.match_mode = MatchMode.UNRANKED
-                elif count in (4, 8):
-                    self.state.match_mode = MatchMode.STREET_BRAWL
+                if self.state.match_mode == MatchMode.UNKNOWN:
+                    if count >= 9: # >= 9 instead of strictly 12 to account for players who haven't yet connected
+                        self.state.match_mode = MatchMode.UNRANKED
+                    elif count >= 5: # same reason
+                        self.state.match_mode = MatchMode.STREET_BRAWL
 
         # (>0 means real match loading)
         elif m := self._match("precaching_heroes", line):
