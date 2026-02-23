@@ -61,7 +61,7 @@ The game's runtime and memory are never touched. So it's VAC-safe and won't affe
 
 ## Known Bugs
 
-Please report any bugs in the Issues tab. 
+Please share any issues!
 
 - 'Looking for Match...' not being displayed for players in a party.
 
