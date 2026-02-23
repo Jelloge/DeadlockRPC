@@ -255,6 +255,17 @@ class GameState:
 
     def set_hero(self, hero_key: str) -> None:
         normalized = hero_key.lower().replace("hero_", "")
+
+        # Strip skin/variant suffixes from VMDL folder names
+        # e.g. "mirage_v2" -> "mirage", "gigawatt_prisoner" -> "gigawatt"
+        if normalized not in HEROES:
+            parts = normalized.split("_")
+            for i in range(len(parts) - 1, 0, -1):
+                candidate = "_".join(parts[:i])
+                if candidate in HEROES:
+                    normalized = candidate
+                    break
+
         if normalized != self.hero_key:
             self.hero_key = normalized
             self.is_transformed = False  # reset form on hero change
