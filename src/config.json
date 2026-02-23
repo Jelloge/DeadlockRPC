@@ -26,7 +26,7 @@
         "map_created_physics": "\\[Client\\] Created physics for\\s+([^\\s]+)",
         "silver_wolf_form_on":  "werewolf_transform\\.vmdl",
         "silver_wolf_form_off": "werewolf\\.vmdl",
-        "mm_start":             "Entering matchmaking for region",
+        "mm_start":             "\\[GCClient\\] Send msg 9010 \\(k_EMsgClientToGCStartMatchmaking\\)",
         "mm_stop":              "\\[GCClient\\] Send msg 9012 \\(k_EMsgClientToGCStopMatchmaking\\)",
         "host_activate":        "\\[HostStateManager\\] Host activate:.*\\(([^)]+)\\)",
         "loaded_hero":          "\\[Server\\] Loaded hero \\d+/(hero_\\w+)",

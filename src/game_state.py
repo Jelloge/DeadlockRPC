@@ -46,16 +46,16 @@ class MatchMode(Enum):
 
 
 MODE_DISPLAY: dict[MatchMode, str] = {
-    MatchMode.UNKNOWN: "in a Match",
-    MatchMode.UNRANKED: "Standard (6v6)",
-    MatchMode.RANKED: "Ranked (6v6)",
-    MatchMode.HERO_LABS: "Hero Labs",
-    MatchMode.PRIVATE_LOBBY: "Private Lobby",
-    MatchMode.BOT_MATCH: "in a Match",
+    MatchMode.UNKNOWN: "Playing a Match",
+    MatchMode.UNRANKED: "Playing Standard (6v6)",
+    MatchMode.RANKED: "Playing Ranked (6v6)",
+    MatchMode.HERO_LABS: "Playing Hero Labs",
+    MatchMode.PRIVATE_LOBBY: "Playing Private Lobby",
+    MatchMode.BOT_MATCH: "Playing in a Bot Match",
     MatchMode.TUTORIAL: "Tutorial",
-    MatchMode.SANDBOX: "in the Sandbox",
+    MatchMode.SANDBOX: "Training in Sandbox Mode",
     MatchMode.CALIBRATION: "Placement Match",
-    MatchMode.STREET_BRAWL: "Street Brawl (4v4)",
+    MatchMode.STREET_BRAWL: "Playing Street Brawl (4v4)",
 }
 
 # Console.log examples:
@@ -64,6 +64,7 @@ MODE_DISPLAY: dict[MatchMode, str] = {
 HEROES: dict[str, str] = {
     # playable heroes
     "atlas": "Abrams",
+    "archer": "Grey Talon",
     "astro": "Holliday",
     "bebop": "Bebop",
     "bookworm": "Paige",
@@ -85,6 +86,7 @@ HEROES: dict[str, str] = {
     "inferno": "Infernus",
     "kali": "Kali",
     "kelvin": "Kelvin",
+    "digger": "Mo & Krill",
     "krill": "Mo & Krill",
     "lash": "Lash",
     "magician": "Sinclair",
@@ -94,6 +96,7 @@ HEROES: dict[str, str] = {
     "operative": "Raven",
     "orion": "Grey Talon",
     "phalanx": "Phalanx",
+    "pocket": "Pocket",
     "priest": "Venator",
     "punkgoat": "Billy",
     "rutger": "Rutger",
@@ -101,6 +104,7 @@ HEROES: dict[str, str] = {
     "slork": "Fathom",
     "synth": "Pocket",
     "tengu": "Ivy",
+    "ivy" : "Ivy",
     "tokamak": "Tokamak",
     "trapper": "Trapper",
     "unicorn": "Celeste",
@@ -154,6 +158,15 @@ HEROES: dict[str, str] = {
     "targetdummy": "TargetDummy",
 }
 
+# Valve renamed some hero folders but Discord assets still use the old codenames.
+# Maps current game codename -> Discord asset key.
+ASSET_OVERRIDES: dict[str, str] = {
+    "archer": "hero_orion",
+    "digger": "hero_krill",
+    "ivy": "hero_tengu",
+    "pocket": "hero_synth",
+}
+
 
 @dataclass
 class GameState:
@@ -192,7 +205,7 @@ class GameState:
         if key in ("werewolf", "silver") and self.is_transformed:
             return "hero_werewolf_wolf"
 
-        return f"hero_{key}"
+        return ASSET_OVERRIDES.get(key, f"hero_{key}")
 
     @property
     def in_party(self) -> bool:

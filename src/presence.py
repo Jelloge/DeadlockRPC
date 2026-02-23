@@ -77,9 +77,6 @@ class DiscordRPC:
             "large_image": state.hero_asset_name or logo,
             "large_text": state.hero_display_name or logo_text,
         }
-        if state.hero_key:
-            p["small_image"] = logo
-            p["small_text"] = logo_text
         if state.in_party:
             p["party_size"] = [state.party_size, PARTY_MAX]
 
@@ -91,7 +88,7 @@ class DiscordRPC:
 
             case GamePhase.HIDEOUT:
                 p["details"] = "In the Hideout"
-                p["details"] = "Playing Solo (1 of 6)"
+                p["state"] = f"Playing Solo (1 of 6)"
 
             case GamePhase.PARTY_HIDEOUT:
                 p["details"] = "In Party Hideout"
@@ -99,29 +96,40 @@ class DiscordRPC:
 
             case GamePhase.IN_QUEUE:
                 p["details"] = "Looking for Match..."
-                if state.hero_key:
-                    p["small_text"] = "Searching"
+                if state.in_party:
+                    p["state"] = f"In Queue {state.party_size}"
+                # if state.hero_key:
+                #     p["small_text"] = "Searching"
 
             case GamePhase.MATCH_INTRO:
                 mode_str = state.mode_display()
-                p["details"] = f"Playing {mode_str}"
+                hero = state.hero_display_name
                 if state.in_party:
+                    p["details"] = f" {mode_str} · {hero}" if hero else f" {mode_str}"
                     p["state"] = f"Party of {state.party_size}"
+                elif hero:
+                    p["details"] = f" {mode_str}"
+                    p["state"] = f"Playing as {hero}"
                 else:
-                    p["details"] = "Playing Solo (1 of 6)"
+                    p["details"] = f" {mode_str}"
                 if state.hero_key:
-                    p["small_text"] = mode_str
+                    p["small_image"] = logo
+                    p["small_text"] = logo_text
 
             case GamePhase.IN_MATCH:
                 mode_str = state.mode_display()
-                p["details"] = f"Playing {mode_str}"
-
+                hero = state.hero_display_name
                 if state.in_party:
+                    p["details"] = f" {mode_str} · {hero}" if hero else f" {mode_str}"
                     p["state"] = f"Party of {state.party_size}"
+                elif hero:
+                    p["details"] = f" {mode_str}"
+                    p["state"] = f"Playing as {hero}"
                 else:
-                    p["details"] = "Playing Solo (1 of 6)"
+                    p["details"] = f" {mode_str}"
                 if state.hero_key:
-                    p["small_text"] = mode_str
+                    p["small_image"] = logo
+                    p["small_text"] = "The Archmother"
                 if state.match_start_time and state.match_mode not in (MatchMode.SANDBOX, MatchMode.TUTORIAL):
                     p["start"] = int(state.match_start_time)
 
