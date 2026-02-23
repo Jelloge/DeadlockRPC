@@ -281,10 +281,11 @@ class LogWatcher:
                 hero_norm = m.group(1).lower().replace("hero_", "")
                 self.state.set_hero(hero_norm)
 
-        # Hero loading
+        # Hero loading via VMDL (remote matches only, not hideout)
+        # In hideout, VMDL fires for OTHER players' heroes, not ours
         # Also handles Silver's wolf form swap
         elif m := self._match("client_hero_vmdl", line):
-            if self.state.phase != GamePhase.SPECTATING:
+            if self.state.phase not in (GamePhase.SPECTATING, GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT):
                 hero_norm = m.group(1).lower()
                 self.state.set_hero(hero_norm)
                 if hero_norm == "werewolf":
