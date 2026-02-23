@@ -47,21 +47,21 @@ class MatchMode(Enum):
 
 
 MODE_DISPLAY: dict[MatchMode, str] = {
-    MatchMode.UNKNOWN: "Match",
+    MatchMode.UNKNOWN: "in a Match",
     MatchMode.UNRANKED: "Standard (6v6)",
     MatchMode.RANKED: "Ranked (6v6)",
     MatchMode.HERO_LABS: "Hero Labs",
     MatchMode.PRIVATE_LOBBY: "Private Lobby",
-    MatchMode.BOT_MATCH: "Bot Match",
+    MatchMode.BOT_MATCH: "in a Match",
     MatchMode.TUTORIAL: "Tutorial",
-    MatchMode.SANDBOX: "Sandbox",
+    MatchMode.SANDBOX: "in the Sandbox",
     MatchMode.CALIBRATION: "Placement Match",
     MatchMode.STREET_BRAWL: "Street Brawl (4v4)",
 }
 
 # Console.log examples:
-#   "Loaded hero 458/hero_inferno"
-#   "Created bot 460/hero_gigawatt/hero_gigawatt"
+#"Loaded hero 458/hero_inferno"
+#"Created bot 460/hero_gigawatt/hero_gigawatt"
 HEROES: dict[str, str] = {
     # Released / playable heroes
     "atlas": "Abrams",

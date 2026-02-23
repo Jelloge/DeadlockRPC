@@ -97,8 +97,7 @@ class DiscordRPC:
                 self._small_logo_if_hero(p, state, logo, logo_text)
 
             case GamePhase.IN_QUEUE:
-                p["details"] = "Finding Match"
-                p["state"] = "Searching..."
+                p["details"] = "Looking for Match..."
                 p["large_image"] = self._hero_or_logo(state, logo)
                 p["large_text"] = state.hero_display_name or logo_text
                 self._small_logo_if_hero(p, state, logo, "Searching")
@@ -108,7 +107,7 @@ class DiscordRPC:
             case GamePhase.MATCH_INTRO:
                 mode_str = state.mode_display()
                 p["details"] = f"Playing {mode_str}"
-                p["state"] = "Match starting."
+                p["state"] = "Match starting"
                 p["large_image"] = self._hero_or_logo(state, logo)
                 p["large_text"] = state.hero_display_name or logo_text
                 self._small_logo_if_hero(p, state, logo, mode_str)
@@ -149,8 +148,7 @@ class DiscordRPC:
                 p["large_image"] = logo
                 p["large_text"] = logo_text
 
-        # Always pass a stable timestamp so Discord doesn't reset it on every update.
-        # Match time takes priority (already set above), otherwise use session start.
+        # pass a stable timestamp so Discord doesn't reset it on every update
         if "start" not in p and state.session_start_time:
             p["start"] = int(state.session_start_time)
 

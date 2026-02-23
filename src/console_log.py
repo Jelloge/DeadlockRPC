@@ -233,7 +233,7 @@ class LogWatcher:
         old_mode = self.state.match_mode
         old_transformed = self.state.is_transformed
 
-        # Map signals (supports both classic map line and "Created physics for <map>")
+        # Map signals
         if m := self._match("map_info", line):
             self._apply_map(m.group(1))
 
@@ -250,16 +250,16 @@ class LogWatcher:
             if self.state.phase == GamePhase.IN_QUEUE:
                 self.state.leave_queue()
 
-        # Lobby created — match found, start the match timer
+        # Lobby created = match found, start the match timer
         elif self._match("lobby_created", line):
             self.state.match_start_time = time.time()
             self.state.queue_start_time = None
 
-        # Lobby destroyed — match is over
+        # Lobby destroyed = match is over
         elif self._match("lobby_destroyed", line):
             self.state.end_match()
 
-        # Spectating — "Playing Broadcast" in HostStateManager
+        # Spectating = "Playing Broadcast" in HostStateManager
         elif self._match("spectate_broadcast", line):
             self.state.phase = GamePhase.SPECTATING
             self.state.match_start_time = None
@@ -274,15 +274,15 @@ class LogWatcher:
             if self.state.phase == GamePhase.IN_QUEUE and "loopback" not in addr.lower():
                 self.state.queue_start_time = None
 
-        # Hero loading — local server (hideout / sandbox / bots)
-        # Skip during spectating — we don't want the spectated player's hero
+        # Hero loading = local server (hideout / sandbox / bots)
+        # Skip during spectating
         elif m := self._match("loaded_hero", line):
             if self.state.phase != GamePhase.SPECTATING:
                 hero_norm = m.group(1).lower().replace("hero_", "")
                 self.state.set_hero(hero_norm)
 
-        # Hero loading — client-side VMDL signal (works in remote matches)
-        # Also handles Silver's wolf form swap (same VMDL line)
+        # Hero loading
+        # Also handles Silver's wolf form swap
         elif m := self._match("client_hero_vmdl", line):
             if self.state.phase != GamePhase.SPECTATING:
                 hero_norm = m.group(1).lower()
@@ -290,14 +290,14 @@ class LogWatcher:
                 if hero_norm == "werewolf":
                     self.state.is_transformed = "werewolf_transform" in line.lower()
 
-        # Silver wolf form from non-VMDL sources (fallback)
+        # Silver wolf form from nonVMDL sources
         elif self._match("silver_wolf_form_on", line):
             self.state.is_transformed = True
 
         elif self._match("silver_wolf_form_off", line):
             self.state.is_transformed = False
 
-        # Disconnect — stay in POST_MATCH while loading back to hideout
+        # Disconnect = stay in POST_MATCH while loading back to hideout
         elif m := self._match("server_disconnect", line):
             reason = m.group(1)
             if "EXITING" in reason.upper():
@@ -359,9 +359,9 @@ class LogWatcher:
         elif self._match("app_shutdown", line) or self._match("source2_shutdown", line):
             self.state.reset()
 
-        # Player info — also infer match mode from player count
-        # Standard 6v6: 12 online, 6 co-op bots
-        # Street Brawl 4v4: 8 online, 4 co-op bots
+        # Player info also infer match mode from player count
+        # Standard 6v6: 12 online 6 co-op bots
+        # Street Brawl 4v4: 8 online 4 co-op bots
         elif m := self._match("player_info", line):
             if self.state.phase != GamePhase.SPECTATING:
                 self.state.player_count = int(m.group(1))
