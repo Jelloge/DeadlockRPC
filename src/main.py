@@ -10,7 +10,7 @@ import threading
 import time
 from pathlib import Path
 
-from game_state import GamePhase, GameState
+from game_state import GameState
 from console_log import LogWatcher
 from presence import DiscordRPC
 from systray import create_tray_icon
@@ -90,7 +90,6 @@ class DeadlockRPC:
         self.rpc = DiscordRPC(
             application_id=self.config["discord_application_id"],
             assets_config=self.config.get("discord_assets", {}),
-            hero_prefix=self.config.get("hero_asset_prefix", "hero_"),
         )
 
         self.watcher: LogWatcher | None = None

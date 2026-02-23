@@ -17,8 +17,6 @@
         "queue_icon": "deadlock_logo"
     },
 
-    "hero_asset_prefix": "hero_", 
-
     "log_patterns": {
         "change_game_state":    "ChangeGameState:\\s+(\\w+)\\s+\\((\\d+)\\)",
         "hideout_lobby_state":  "\\[Hideout\\] Hideout Lobby Connection State:\\s+(\\w+)\\s+\\((-?\\d+)\\)",

@@ -14,8 +14,7 @@ def create_tray_icon(app):
         from PIL import Image
     except ImportError:
         logger.warning(
-            "pystray or Pillow not installed"
-            "Install with: pip install pystray Pillow"
+            "pystray or Pillow not installed. Install with: pip install pystray Pillow"
         )
         return None
 

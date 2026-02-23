@@ -9,7 +9,7 @@ import re
 import subprocess
 import time
 from pathlib import Path
-from typing import Callable, Optional
+from typing import Callable
 
 from game_state import GamePhase, GameState, MatchMode
 
@@ -25,8 +25,8 @@ class LogWatcher:
         hideout_maps: list[str],
         process_names: list[str],
         resync_max_bytes: int = 100 * 1024,
-        map_to_mode: Optional[dict[str, str]] = None,
-        on_state_change: Optional[Callable[[GameState], None]] = None,
+        map_to_mode: dict[str, str] | None = None,
+        on_state_change: Callable[[GameState], None] | None = None,
     ):
         self.log_path = Path(log_path)
         self.state = state
@@ -218,7 +218,7 @@ class LogWatcher:
         # Hideout maps
         if map_name in self.hideout_maps:
             self.state.phase = GamePhase.PARTY_HIDEOUT if self.state.in_party else GamePhase.HIDEOUT
-            self._hideout_loaded = True
+            self._hideout_loaded = False
             self._bot_init_count = 0
             return
 
@@ -261,9 +261,7 @@ class LogWatcher:
 
         # Spectating = "Playing Broadcast" in HostStateManager
         elif self._match("spectate_broadcast", line):
-            self.state.phase = GamePhase.SPECTATING
-            self.state.match_start_time = None
-            self.state.queue_start_time = None
+            self.state.enter_spectating()
             self._hideout_loaded = False
 
         # If we connect to a real server while queued, stop queue timer
@@ -274,18 +272,19 @@ class LogWatcher:
             if self.state.phase == GamePhase.IN_QUEUE and "loopback" not in addr.lower():
                 self.state.queue_start_time = None
 
-        # Hero loading = local server (hideout / sandbox / bots)
-        # Skip during spectating
+        # Hero loading = local server (skip during spectating / initial hideout load)
         elif m := self._match("loaded_hero", line):
             if self.state.phase != GamePhase.SPECTATING:
                 hero_norm = m.group(1).lower().replace("hero_", "")
-                self.state.set_hero(hero_norm)
+                is_hideout = self.state.phase in (GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT)
+                if not (is_hideout and not self._hideout_loaded):
+                    self.state.set_hero(hero_norm)
 
         # Hero loading via VMDL (remote matches only, not hideout)
         # In hideout, VMDL fires for OTHER players' heroes, not ours
         # Also handles Silver's wolf form swap
         elif m := self._match("client_hero_vmdl", line):
-            if self.state.phase not in (GamePhase.SPECTATING, GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT):
+            if self.state.phase != GamePhase.SPECTATING:
                 hero_norm = m.group(1).lower()
                 self.state.set_hero(hero_norm)
                 if hero_norm == "werewolf":
@@ -387,7 +386,7 @@ class LogWatcher:
             or self.state.is_transformed != old_transformed
         )
 
-    def _match(self, pattern_name: str, line: str) -> Optional[re.Match]:
+    def _match(self, pattern_name: str, line: str) -> re.Match | None:
         pattern = self.patterns.get(pattern_name)
         if pattern is None:
             return None

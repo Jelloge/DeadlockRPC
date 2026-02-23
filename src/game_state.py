@@ -7,7 +7,6 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 from enum import Enum, auto
-from typing import Optional
 
 
 class GamePhase(Enum):
@@ -63,7 +62,7 @@ MODE_DISPLAY: dict[MatchMode, str] = {
 #"Loaded hero 458/hero_inferno"
 #"Created bot 460/hero_gigawatt/hero_gigawatt"
 HEROES: dict[str, str] = {
-    # Released / playable heroes
+    # playable heroes
     "atlas": "Abrams",
     "astro": "Holliday",
     "bebop": "Bebop",
@@ -160,29 +159,29 @@ HEROES: dict[str, str] = {
 class GameState:
     phase: GamePhase = GamePhase.NOT_RUNNING
     match_mode: MatchMode = MatchMode.UNKNOWN
-    hero_key: Optional[str] = None  # internal codename
+    hero_key: str | None = None  # internal codename
     is_transformed: bool = False
     party_size: int = 1  # 1 = solo
-    server_address: Optional[str] = None  # ip:port from console
-    map_name: Optional[str] = None
+    server_address: str | None = None  # ip:port from console
+    map_name: str | None = None
     is_loopback: bool = False  # hideout
-    match_start_time: Optional[float] = None  # epoch when match began
-    queue_start_time: Optional[float] = None  # epoch when queue began
-    session_start_time: Optional[float] = None  # epoch when game was detected
+    match_start_time: float | None = None  # epoch when match began
+    queue_start_time: float | None = None  # epoch when queue began
+    session_start_time: float | None = None  # epoch when game was detected
     last_update: float = field(default_factory=time.time)
-    game_state_id: Optional[int] = None  # from ChangeGameState
+    game_state_id: int | None = None  # from ChangeGameState
     player_count: int = 0
     bot_count: int = 0
-    bot_difficulty: Optional[str] = None
+    bot_difficulty: str | None = None
 
     @property
-    def hero_display_name(self) -> Optional[str]:
+    def hero_display_name(self) -> str | None:
         if self.hero_key is None:
             return None
         return HEROES.get(self.hero_key.lower(), self.hero_key.replace("_", " ").title())
 
     @property
-    def hero_asset_name(self) -> Optional[str]:
+    def hero_asset_name(self) -> str | None:
         """Discord asset key for the current hero."""
         if self.hero_key is None:
             return None
@@ -203,18 +202,6 @@ class GameState:
     def is_in_match(self) -> bool:
         return self.phase in (GamePhase.IN_MATCH, GamePhase.MATCH_INTRO)
 
-    @property
-    def elapsed_match_seconds(self) -> Optional[int]:
-        if self.match_start_time is None:
-            return None
-        return int(time.time() - self.match_start_time)
-
-    @property
-    def elapsed_queue_seconds(self) -> Optional[int]:
-        if self.queue_start_time is None:
-            return None
-        return int(time.time() - self.queue_start_time)
-
     def mode_display(self) -> str:
         return MODE_DISPLAY.get(self.match_mode, "Match")
 
@@ -234,6 +221,13 @@ class GameState:
     def leave_queue(self) -> None:
         self.queue_start_time = None
         self.enter_hideout()
+
+    def enter_spectating(self) -> None:
+        self.phase = GamePhase.SPECTATING
+        self.hero_key = None
+        self.is_transformed = False
+        self.match_start_time = None
+        self.queue_start_time = None
 
     def enter_match_intro(self) -> None:
         self.phase = GamePhase.MATCH_INTRO
@@ -291,18 +285,11 @@ class GameState:
 
     def reset(self) -> None:
         """Full reset when the game closes."""
+        self._clear_match()
         self.phase = GamePhase.NOT_RUNNING
-        self.match_mode = MatchMode.UNKNOWN
         self.hero_key = None
         self.party_size = 1
-        self.server_address = None
-        self.is_transformed = False
-        self.map_name = None
-        self.match_start_time = None
         self.queue_start_time = None
         self.session_start_time = None
         self.is_loopback = False
-        self.game_state_id = None
         self.player_count = 0
-        self.bot_count = 0
-        self.bot_difficulty = None
