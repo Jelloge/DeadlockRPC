@@ -287,11 +287,15 @@ class LogWatcher:
                     self.state.set_hero(hero_norm)
 
         # Hero loading — client-side VMDL signal (works in remote matches)
+        # Also handles Silver's wolf form swap (same VMDL line)
         elif m := self._match("client_hero_vmdl", line):
             if self.state.phase != GamePhase.SPECTATING:
                 hero_norm = m.group(1).lower()
                 self.state.set_hero(hero_norm)
+                if hero_norm == "werewolf":
+                    self.state.is_transformed = "werewolf_transform" in line.lower()
 
+        # Silver wolf form from non-VMDL sources (fallback)
         elif self._match("silver_wolf_form_on", line):
             self.state.is_transformed = True
 
