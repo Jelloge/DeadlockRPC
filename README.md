@@ -1,12 +1,9 @@
 <img width="1700" height="1268" alt="image" src="https://github.com/user-attachments/assets/6d562252-a7e6-44ab-bfeb-8a753469b117" />
 
-[![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence)
+[![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence) ![Platform: Windows](https://img.shields.io/badge/platform-Windows-lightgrey?cacheSeconds=100000) [![SuperCumRat69 on Steam](https://img.shields.io/badge/Steam-SuperCumRat69-blue?logo=Steam)](https://steamcommunity.com/id/supercumrat69/)
 
 
-Rich Presence for Valve's [Deadlock](https://store.steampowered.com/app/1422450/Deadlock/) .
-
-Python application that shows your current in-game status on your Discord profile (hero, game mode, match type, party size, match timer, etc).
-
+Discord Rich Presence for Valve's [Deadlock](https://store.steampowered.com/app/1422450/Deadlock/). Python application that shows your current in-game status on your Discord profile (hero, game mode, match type, party size, match timer, etc).
 
 <img width="250" height="127" alt="deadlock1" src="https://github.com/user-attachments/assets/04db86fa-7a8d-41eb-8311-44d65bd2ca0b" />  <img width="257" height="144" alt="deadlock3" src="https://github.com/user-attachments/assets/5e2fb80c-08b5-4d82-abfb-83d25a6d2c0e" /> <img width="273" height="137" alt="deadlock2" src="https://github.com/user-attachments/assets/02f94a24-3aa7-48a8-a028-7ae4b304f3f4" />
 
