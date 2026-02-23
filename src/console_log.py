@@ -160,6 +160,7 @@ class LogWatcher:
             if game_running and not self._game_was_running:
                 logger.info("Deadlock detected!")
                 self._game_was_running = True
+                self.state.session_start_time = time.time()
                 self.state.enter_main_menu()
                 self._notify()
 
@@ -215,11 +216,12 @@ class LogWatcher:
         if mapped_mode and mapped_mode != MatchMode.UNKNOWN:
             self.state.match_mode = mapped_mode
 
-        # Hideout maps
+        # Hideout maps — only skip the first hero load when first entering
         if map_name in self.hideout_maps:
+            if self.state.phase not in (GamePhase.HIDEOUT, GamePhase.PARTY_HIDEOUT):
+                self._skip_first_hideout_hero = True
             self.state.phase = GamePhase.PARTY_HIDEOUT if self.state.in_party else GamePhase.HIDEOUT
             self._hideout_loaded = True
-            self._skip_first_hideout_hero = True
             self._bot_init_count = 0
             return
 
