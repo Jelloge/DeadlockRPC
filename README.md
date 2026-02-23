@@ -13,7 +13,7 @@ The application will automatically launch your game with '-condebug' via Steam s
 
 ## Installation
 
-Download **DeadlockRPC.exe** from the [latest release](https://github.com/Jelloge/DeadlockRPC/releases/latest) and run it!
+Download **DeadlockRPC.exe** from the [latest release](https://github.com/Jelloge/DeadlockRPC/releases/latest) and run it! It will show up in your taskbar.
 
 Config.json has my game's install path hardcoded, and it will work for most people. If you have Deadlock on a different drive, it will (should) fall back to the auto-detection feature which will search common paths and parses libraryfolders.vdf so it should be fine. 
 
