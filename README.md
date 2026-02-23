@@ -48,4 +48,16 @@ DeadlockRP monitors Deadlock's `console.log` file (written when the game runs wi
 
 The game's runtime and memory are never touched. So it's VAC-safe and won't affect performance.
 
+## TO-DO
+
+- Dynamic portrait changes, for critical and gloating portraits. Recently implemented switches that will display Silver's wolf and human form, so I know that it's do-able
+- Localization
+- Clean up code
+- Cross-platform stuff
+
+## Known Bugs
+
+Please report any bugs in the Issues tab.
+
+- 'Looking for Match...' not being displayed for players in a party.
 
