@@ -222,8 +222,6 @@ class LogWatcher:
         # Any map in map_to_mode counts as a match map
         if map_name in self.map_to_mode:
             self.state.phase = GamePhase.IN_MATCH
-            if self.state.match_start_time is None:
-                self.state.match_start_time = time.time()
             self._hideout_loaded = False
 
     def _process_line(self, line: str) -> bool:

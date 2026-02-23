@@ -133,8 +133,9 @@ class DiscordRPC:
                     p["small_image"] = logo
                     p["small_text"] = mode_str
 
-                if state.match_start_time:
+                if state.match_start_time and state.match_mode not in (MatchMode.SANDBOX, MatchMode.TUTORIAL):
                     p["start"] = int(state.match_start_time)
+                    
                 if state.in_party:
                     p["party_size"] = [state.party_size, PARTY_MAX]
 

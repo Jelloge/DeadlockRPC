@@ -59,7 +59,6 @@ MODE_DISPLAY: dict[MatchMode, str] = {
     MatchMode.STREET_BRAWL: "Street Brawl (4v4)",
 }
 
-# citadel_gc_hero_names_english.txt (official Deadlock localization)
 # Console.log examples:
 #   "Loaded hero 458/hero_inferno"
 #   "Created bot 460/hero_gigawatt/hero_gigawatt"
@@ -250,6 +249,7 @@ class GameState:
 
     def end_match(self) -> None:
         self.phase = GamePhase.POST_MATCH
+        self.match_start_time = None
         self.game_state_id = 6
 
     def set_hero(self, hero_key: str) -> None:
