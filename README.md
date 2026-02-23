@@ -1,19 +1,26 @@
 <img width="1700" height="1268" alt="image" src="https://github.com/user-attachments/assets/6d562252-a7e6-44ab-bfeb-8a753469b117" />
 
+[![pypresence](https://img.shields.io/badge/using-pypresence-00bb88.svg?style=for-the-badge&logo=discord&logoWidth=20)](https://github.com/qwertyquerty/pypresence)
+
 
 Rich Presence for Valve's [Deadlock](https://store.steampowered.com/app/1422450/Deadlock/) .
 
 Python application that shows your current in-game status on your Discord profile (hero, game mode, match type, party size, match timer, etc).
-The application will automatically launch your game with '-condebug' via Steam so console logging is always enabled.
+
+
+<img width="250" height="127" alt="deadlock1" src="https://github.com/user-attachments/assets/04db86fa-7a8d-41eb-8311-44d65bd2ca0b" />  <img width="257" height="144" alt="deadlock3" src="https://github.com/user-attachments/assets/5e2fb80c-08b5-4d82-abfb-83d25a6d2c0e" /> <img width="273" height="137" alt="deadlock2" src="https://github.com/user-attachments/assets/02f94a24-3aa7-48a8-a028-7ae4b304f3f4" />
 
 ## Requirements
 
 - Discord 
 - Steam + Deadlock installed
 
-## Installation
+## Installation and Setup
 
-Download **DeadlockRPC.exe** from the [latest release](https://github.com/Jelloge/DeadlockRPC/releases/latest) and run it! It will show up in your taskbar.
+
+Download **DeadlockRPC.exe** from the [latest release](https://github.com/Jelloge/DeadlockRPC/releases/latest) and run it! 
+
+It will show up in your taskbar. Make sure you launch the game USING this app, as it will automatically launch your game with '-condebug' via Steam so console logging is always enabled.
 
 Config.json has my game's install path hardcoded, and it will work for most people. If you have Deadlock on a different drive, it will (should) fall back to the auto-detection feature which will search common paths and parses libraryfolders.vdf so it should be fine. 
 
