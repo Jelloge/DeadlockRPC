@@ -5,7 +5,7 @@
 
     "console_log_relative_path": "game/citadel/console.log",
 
-    "process_names": ["project8.exe", "deadlock.exe"],
+    "process_names": ["project8.exe", "deadlock.exe", "project8"],
 
     "update_interval_seconds": 15,
 

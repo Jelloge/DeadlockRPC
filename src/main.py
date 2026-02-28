@@ -106,9 +106,15 @@ def find_deadlock_path(config: dict) -> Path | None:
             home / ".local/share/Steam/steamapps/common/Deadlock",
         ]
 
-    # Prefer paths with the actual game executable over leftover empty dirs
+    # Prefer paths with the actual game executable over leftover empty dirs.
+    # Proton installs the Windows binaries on Linux too, so win64/project8.exe
+    # works as a quality check on both platforms.
+    exe_candidates = [
+        Path("game") / "bin" / "win64" / "project8.exe",
+        Path("game") / "bin" / "linuxsteamrt64" / "project8",  # future native build
+    ]
     for c in candidates:
-        if c.exists() and (c / "game" / "bin" / "win64" / "project8.exe").exists():
+        if c.exists() and any((c / exe).exists() for exe in exe_candidates):
             return c
 
     for c in candidates:

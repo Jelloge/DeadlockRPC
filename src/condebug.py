@@ -17,7 +17,11 @@ def launch():
     elif sys.platform == "darwin":
         subprocess.Popen(["open", STEAM_URL])
     else:
-        webbrowser.open(STEAM_URL)
+        # xdg-open is more reliable than webbrowser for steam:// URIs on Linux
+        try:
+            subprocess.Popen(["xdg-open", STEAM_URL])
+        except FileNotFoundError:
+            webbrowser.open(STEAM_URL)
 
 
 if __name__ == "__main__":
