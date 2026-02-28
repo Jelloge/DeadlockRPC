@@ -62,17 +62,27 @@ class LogWatcher:
         self._game_was_running = False
 
     def is_game_running(self) -> bool:
-        """Check if Deadlock is running via tasklist (Windows)."""
+        """Check if Deadlock is running via tasklist (Windows) or pgrep (Linux/Mac)."""
         if os.name != "nt":
+            # On Linux, Deadlock runs through Proton, so the Windows .exe name still
+            # appears in the process command line — pgrep -f catches it.
+            for proc_name in self.process_names:
+                try:
+                    result = subprocess.run(
+                        ["pgrep", "-f", proc_name],
+                        capture_output=True,
+                        timeout=3,
+                    )
+                    if result.returncode == 0:
+                        return True
+                except Exception:
+                    continue
             try:
-                result = subprocess.run(
-                    ["pgrep", "-f", "deadlock"],
-                    capture_output=True,
-                    timeout=3,
+                return self.log_path.exists() and (
+                    time.time() - self.log_path.stat().st_mtime < 60
                 )
-                return result.returncode == 0
-            except Exception:
-                return self.log_path.exists()
+            except OSError:
+                return False
 
         for proc_name in self.process_names:
             try:
