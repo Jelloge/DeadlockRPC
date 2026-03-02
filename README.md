@@ -39,7 +39,9 @@ Output: `dist/DeadlockRPC.exe`
 
 ## Linux/Mac Support
 
-The app was built and tested on a Windows platform, so currently Mac and Linux are unsupported. Linux users MIGHT be able to run python src/main.py from source. Let me know if you try this! 
+Experimental Linux support was added !
+
+The app was built and tested on a Windows (and now Linux) platform, so currently Mac OS is unsupported.
 
 ## How It Works
 
